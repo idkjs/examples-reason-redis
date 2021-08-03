@@ -1,9 +1,10 @@
-open Opium.Std;
+open Opium;
+module Redis = Redis_lwt.Client;
 
 let host = Array.length(Sys.argv) >= 2 ? Sys.argv[1] : "localhost";
 let port = 6379;
 
-let conn_promise = Redis_lwt.Client.connect({host, port});
+let conn_promise = Redis.connect({host, port});
 
 let (let.lwt) = Lwt.bind;
 let (let.lwt_map) = (v, f) => Lwt.map(f, v);
@@ -11,31 +12,31 @@ let (let.lwt_map) = (v, f) => Lwt.map(f, v);
 let not_found = Rock.Response.make(~status=`Not_found, ());
 
 let get_key =
-  get("/:key", req => {
-    let key = param(req, "key");
+  App.get("/:key", req => {
+    let key = Router.param(req, "key");
     let.lwt conn = conn_promise;
-    let.lwt_map response = Redis_lwt.Client.get(conn, key);
+    let.lwt_map response = Redis.get(conn, key);
     switch (response) {
-    | Some(value) => Response.of_string(key ++ ": " ++ value)
+    | Some(value) => Response.of_plain_text(key ++ ": " ++ value)
     | None => not_found
     };
   });
 
 let set_key =
-  put("/:key", req => {
-    let key = param(req, "key");
-    let.lwt value = App.string_of_body_exn(req);
+  App.put("/:key", req => {
+    let key = Router.param(req, "key");
+    let.lwt value = req.Request.body |> Body.to_string;
     let.lwt conn = conn_promise;
-    let.lwt _success = Redis_lwt.Client.set(conn, key, value);
-    Response.of_string("SET " ++ key ++ " " ++ value) |> Lwt.return;
+    let.lwt _success = Redis.set(conn, key, value);
+    Response.of_plain_text("SET " ++ key ++ " " ++ value) |> Lwt.return;
   });
 let delete_key =
-  delete("/:key", req => {
-    let key = param(req, "key");
-    let.lwt _value = App.string_of_body_exn(req);
+  App.delete("/:key", req => {
+    let key = Router.param(req, "key");
+    let.lwt _value = req.Request.body |> Body.to_string;
     let.lwt conn = conn_promise;
-    let.lwt _success = Redis_lwt.Client.del(conn, [key]);
-    Response.of_string("DEL " ++ key) |> Lwt.return;
+    let.lwt _success = Redis.del(conn, [key]);
+    Response.of_plain_text("DEL " ++ key) |> Lwt.return;
   });
 
 App.empty

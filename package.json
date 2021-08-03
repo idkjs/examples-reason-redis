@@ -14,28 +14,16 @@
   },
   "dependencies": {
     "@esy-ocaml/reason": "*",
-    "@opam/dune": ">=1.6.0",
-    "@opam/lwt": "^5.3.0",
-    "@opam/opium": "rgrinberg/opium:opium.opam#29165400123c2d54da27d3e6edb3404374f532f9",
-    "@opam/opium_kernel": "rgrinberg/opium:opium_kernel.opam#29165400123c2d54da27d3e6edb3404374f532f9",
-    "@opam/redis": "0.4",
-    "@opam/redis-lwt": "0.4",
+    "@opam/dune": "2.9.0",
+    "@opam/lwt": "5.4.1",
+    "@opam/opium": "0.20.0",
+    "@opam/redis": "0.5",
+    "@opam/redis-lwt": "0.5",
     "ocaml": "~4.10.0"
   },
   "devDependencies": {
-    "ocaml": "~4.10.0",
-    "refmterr": "*",
     "@opam/merlin": "*",
-    "@opam/ocaml-lsp-server": "ocaml/ocaml-lsp:ocaml-lsp-server.opam"
-  },
-  "resolutions": {
-    "@opam/opium_kernel": {
-      "source": "rgrinberg/opium:opium_kernel.opam#29165400123c2d54da27d3e6edb3404374f532f9",
-      "override": {
-        "dependencies": {
-          "@opam/ppx_sexp_conv": "v0.14.0"
-        }
-      }
-    }
+    "@opam/ocaml-lsp-server": "*",
+    "refmterr": "*"
   }
 }
